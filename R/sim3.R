@@ -336,9 +336,9 @@ sim3 <- function(start_con = 1, end_con = 960, REPS = 1000) {
     #############################################################################
     # Summarizing Results with Exclusion Strategies
     #############################################################################
-    # Initialize lists to store results for partial and full exclusion
-    partial_out <- list()
-    full_out <- list()
+    # Initialize lists to store results for casewise and datasetwise exclusion
+    casewise_out <- list()
+    datasetwise_out <- list()
     
     # Process replications and track failed ones
     for (rep in 1:REPS) {
@@ -355,10 +355,10 @@ sim3 <- function(start_con = 1, end_con = 960, REPS = 1000) {
         failed_reps <- c(failed_reps, rep)
         
         # Replication has at least one failure
-        # Full exclusion applies: exclude all estimators for this replication
+        # datasetwise exclusion applies: exclude all estimators for this replication
         for (estimator in 1:5) {
-          partial_out[[length(partial_out) + 1]] <- res[[rep, estimator]]
-          full_out[[length(full_out) + 1]] <- list(
+          casewise_out[[length(casewise_out) + 1]] <- res[[rep, estimator]]
+          datasetwise_out[[length(datasetwise_out) + 1]] <- list(
             estimator = estimator,
             rep = rep,
             time = res[[rep, estimator]]$time,
@@ -378,8 +378,8 @@ sim3 <- function(start_con = 1, end_con = 960, REPS = 1000) {
       } else {
         # All estimators succeeded in this replication
         for (estimator in 1:5) {
-          partial_out[[length(partial_out) + 1]] <- res[[rep, estimator]]
-          full_out[[length(full_out) + 1]] <- res[[rep, estimator]]
+          casewise_out[[length(casewise_out) + 1]] <- res[[rep, estimator]]
+          datasetwise_out[[length(datasetwise_out) + 1]] <- res[[rep, estimator]]
         }
       }
     }
@@ -528,15 +528,15 @@ sim3 <- function(start_con = 1, end_con = 960, REPS = 1000) {
     }
     
     #############################################################################
-    # Summarize Results for Partial and Full Exclusion
+    # Summarize Results for casewise and datasetwise Exclusion
     #############################################################################
-    partial_summarized <- summarize_results(partial_out, exclusion_flag = 0)
-    full_summarized <- summarize_results(full_out, exclusion_flag = 1)
+    casewise_summarized <- summarize_results(casewise_out, exclusion_flag = 0)
+    datasetwise_summarized <- summarize_results(datasetwise_out, exclusion_flag = 1)
     
     #############################################################################
     # Combine Both Summaries to Create Final Summarized Results
     #############################################################################
-    final_summarized <- bind_rows(partial_summarized, full_summarized)
+    final_summarized <- bind_rows(casewise_summarized, datasetwise_summarized)
     
     # Return the summarized results
     return(final_summarized)
